@@ -16,6 +16,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <lablic/lablicmoduledefine.h>
+#include <random>
 
 namespace inviwo {
 
@@ -47,6 +48,8 @@ public:
 protected:
     /// Our main computation function
     virtual void process() override;
+    // Helper functions
+    float randomValue(const float min, const float max) const;
 
     // Ports
 public:
@@ -59,9 +62,15 @@ public:
     // TODO: Declare additional properties
     // IntProperty properyName;
     // TemplateOptionProperty<int> propertyName2;
+    Int64Property propRandomSeed; 
+    TemplateOptionProperty<int> propTextureDecider;
+
+
 
     // Attributes
 private:
+    mutable std::mt19937 randGenerator;
+    mutable std::uniform_real_distribution<float> uniformReal;
 };
 
 }  // namespace inviwo

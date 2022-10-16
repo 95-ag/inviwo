@@ -27,8 +27,12 @@ const ProcessorInfo NoiseTextureGenerator::getProcessorInfo() const { return pro
 NoiseTextureGenerator::NoiseTextureGenerator()
     : Processor()
     , texOut_("texOut")
-    , texSize_("texSize", "Texture Size", vec2(512, 512), vec2(1, 1), vec2(2048, 2048), vec2(1, 1))
+    , texSize_("texSize", "Texture Size", vec2(100, 100), vec2(1, 1), vec2(2048, 2048), vec2(1, 1))
 // TODO: Register additional properties
+    , propRandomSeed("randomSeed", "Random Seed", 0, 0, std::mt19937::max())
+    , propTextureDecider("textureDecider", "Texture Decider")
+
+
 {
     // Register ports
     addPort(texOut_);
@@ -37,6 +41,12 @@ NoiseTextureGenerator::NoiseTextureGenerator()
     addProperty(texSize_);
 
     // TODO: Register additional properties
+    addProperty(propRandomSeed);
+    propRandomSeed.setSemantics(PropertySemantics::Text);
+    addProperty(propTextureDecider); 
+    propTextureDecider.addOption("greyScaleTexture", "Grey-Scale Texture", 0);
+    propTextureDecider.addOption("blackwhiteTexture", "Black-White Texture", 1);
+
 }
 
 void NoiseTextureGenerator::process() {
@@ -74,20 +84,34 @@ void NoiseTextureGenerator::process() {
     LogProcessorInfo("The interpolated color at (0.5,0.5) is " << color << " with grayscale value "
                                                                << value << ".");
 
+    randGenerator.seed(static_cast<std::mt19937::result_type>(propRandomSeed.get()));
+
     for (int j = 0; j < texSize_.get().y; j++) {
         for (int i = 0; i < texSize_.get().x; i++) {
 
-            val = 256 / 2;
             // TODO: Randomly sample values for the texture, this produces the same gray value for
             // all pixels
             // A value within the ouput image is set by specifying pixel position and color
-            noiseTexture.setPixelGrayScale(size2_t(i, j), val);
+            val = randomValue(0, 255); 
+            if (propTextureDecider.get() == 1){
+                if(val > 256/2){
+                    val = 255; 
+                }
+                else{
+                    val = 0; 
+                }
+            }
+            //noiseTexture.setPixelGrayScale(size2_t(i, j), val);
             // Alternatively, the entire color can be specified
-            // noiseTexture.setPixel(size2_t(i, j), vec4(val, val, val, 255));
+            noiseTexture.setPixel(size2_t(i, j), vec4(val, val, val, 255));
         }
     }
 
     texOut_.setData(outImage);
+}
+
+float NoiseTextureGenerator::randomValue(const float min, const float max) const {
+    return min + uniformReal(randGenerator) * (max - min);
 }
 
 }  // namespace inviwo

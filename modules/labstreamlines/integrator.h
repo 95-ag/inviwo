@@ -46,8 +46,21 @@ public:
     // Runge-Kutte of 4th order integration method)
     // Pass any other properties that influence the integration process
     // Examples would be the stepsize, inegreation direction, ...
-    // static dvec2 RK4(const VectorField2& vectorField, const dvec2& position, ...);
-    // static dvec2 Euler(const VectorField2& vectorField, const dvec2& position, ...);
+    // Integration step with  Euler
+    static dvec2 Euler(const VectorField2& vectorField, const dvec2& position, float stepSize, int dir, bool norm);
+    static dvec2 RK4(const VectorField2& vectorField, const dvec2& position, float stepSize, int dir, bool norm);
+    static std::tuple<dvec2, bool> RK4_(const VectorField2& vectorField, const dvec2& position, float stepSize, int dir,
+                                            bool norm, bool zeros, bool stopSlow, float velocity);
+    static int StreamLines(bool Rk4type, const VectorField2& vectorField, const dvec2& startPoint,
+        bool direction, float stepSize, bool normalized, bool stopSteps, int numIter,
+        bool stopArc, float arc, bool boundary, bool zeros, bool stopSlow, float velocity,
+        bool displayPoints, IndexBufferRAM* indexBufferPoints, IndexBufferRAM* indexBuffer, std::vector<BasicMesh::Vertex>& vertices);
+    
+    static std::list<vec2> StreamLine(const VectorField2& vectorField, const  dvec2& startPoint, float stepSize, bool stopArc, float arc);
+    static int Separatrix(const VectorField2& vectorField, const  dvec2& startPoint, const  dvec2& criticalPoint, int dir, float stepSize,
+                            IndexBufferRAM* indexBufferlines, std::vector<BasicMesh::Vertex>& vertices);
+    static int SeparatrixBoundary(const VectorField2& vectorField, const  dvec2& startPoint, float stepSize,
+                            IndexBufferRAM* indexBufferlines, std::vector<BasicMesh::Vertex>& vertices);
 };
 
 }  // namespace inviwo

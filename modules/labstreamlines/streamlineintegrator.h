@@ -23,6 +23,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <labstreamlines/labstreamlinesmoduledefine.h>
 #include <labutils/scalarvectorfield.h>
+#include <random>
 
 namespace inviwo {
 
@@ -73,6 +74,7 @@ protected:
 
     // (TODO: You could define some helper functions here,
     // e.g. a function creating a single streamline from one seed point)
+    float randomValue(const float min, const float max) const;
 
 // Ports
 public:
@@ -90,7 +92,8 @@ public:
     FloatVec2Property propStartPoint;
     TemplateOptionProperty<int> propSeedMode;
     BoolProperty propDisplayPoints;
-    IntProperty propNumStepsTaken;
+    IntProperty propNumStepsTakenRK4;
+    IntProperty propNumStepsTakenEuler;
     EventProperty mouseMoveStart;
 
     // TODO: Declare additional properties
@@ -100,11 +103,34 @@ public:
     // IntVec2Property propertyName3;
     // TemplateOptionProperty<int> propertyName4;
     // BoolProperty propertyName5;
+    BoolProperty propFwdDir;
+    FloatProperty propStepSize;
+    BoolProperty propNormalized;
+    BoolProperty propStopSteps;
+    IntProperty propNumSteps;
+    BoolProperty propStopArc;
+    FloatProperty propArc;
+    BoolProperty propBounds;
+    BoolProperty propZeros;
+    BoolProperty propStopSlow;
+    FloatProperty propVelocity;
+    IntProperty propNumStreamLines;
+    BoolProperty propSeedUniform;
+    IntProperty propNumXgrid;
+    IntProperty propNumYgrid;
+    BoolProperty propDistributed;
+    BoolProperty propRk4;
+    BoolProperty propEuler;
+    Int64Property propRandomSeed;
+
+
 
 // Attributes
 private:
     dvec2 BBoxMin_{0, 0};
     dvec2 BBoxMax_{0, 0};
+    mutable std::mt19937 randGenerator;
+    mutable std::uniform_real_distribution<float> uniformReal;
 };
 
 }  // namespace inviwo

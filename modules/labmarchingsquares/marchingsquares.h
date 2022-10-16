@@ -71,6 +71,12 @@ protected:
     virtual void process() override;
 
     // (TODO: Helper functions can be defined here and then implemented in the .cpp)
+    double linearInterpolation(double x0, double x1, double f0, double f1, double c);
+    vec2 getVertexPos(int i, int j, dvec2 bBoxMin, dvec2 cellSize);
+    bool isolineInCell(double f00, double f01, double f10, double f11, double c);
+    bool isolineOnSide(double f0, double f1, double c);
+    void gaussKernel(double kernel[], double sigma);
+    double applyConv(double inputs[], double kernel[]);
 
     // Draw a line segment from v1 to v2 with a color
     void drawLineSegment(const vec2& v1, const vec2& v2, const vec4& color,
@@ -102,6 +108,9 @@ public:
     // Properties for multiple iso contours
     IntProperty propNumContours;
     TransferFunctionProperty propIsoTransferFunc;
+    // Properties for smoothing
+    BoolProperty propSmooth;
+    FloatProperty propSigma;
 
     // Attributes
 private:

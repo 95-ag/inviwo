@@ -73,7 +73,15 @@ protected:
     static void drawLineSegment(const dvec2& v1, const dvec2& v2, const vec4& color,
                                 IndexBufferRAM* indexBuffer,
                                 std::vector<BasicMesh::Vertex>& vertices);
+    
+    static bool checkSign(dvec2 f00, dvec2 f10, dvec2 f01, dvec2 f11); 
+    static bool checkSignBoundary(dvec2 f0, dvec2 f1);
 
+    static dvec2 getVertexPos(int i, int j, dvec2 bBoxMin, dvec2 cellSize); 
+
+    static std::tuple<dvec2, bool> domainDecomposition(const VectorField2& vectorField, dvec2 threshold, dvec2 p00, dvec2 p10, dvec2 p01, dvec2 p11);
+    static std::tuple<dvec2, bool> domainDecomposition2(const VectorField2& vectorField, dvec2 threshold, dvec2 p00, dvec2 p10, dvec2 p01, dvec2 p11);
+    static std::tuple<dvec2, bool> domainDecompositionBoundary(const VectorField2& vectorField, double threshold, dvec2 p0, dvec2 p1, bool x_axis);
     // Ports
 public:
     // Input data
@@ -84,6 +92,10 @@ public:
 
 	// Output mesh for bounding box and gridlines
     MeshOutport meshBBoxOut;
+
+    // Properties
+    DoubleProperty propThresholdFactor;
+    DoubleProperty propThresholdBoundary;
 
 };  // namespace inviwo
 

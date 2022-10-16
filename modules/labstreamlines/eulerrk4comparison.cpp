@@ -40,6 +40,11 @@ EulerRK4Comparison::EulerRK4Comparison()
 // propertyName("propertyIdentifier", "Display Name of the Propery",
 // default value (optional), minimum value (optional), maximum value (optional), increment
 // (optional)); propertyIdentifier cannot have spaces
+    , propStepSizeEuler("stepSizeEuler", "Step Size Euler", 1, 0.005, 1, 0.005)
+    , propStepSizeRk4("stepSizeRk4", "Step Size RK4", 1, 0.005, 1, 0.005)
+
+    , propNumIterEuler("numIterEuler", "Number Iteration Euler", 1, 1, 100, 1)
+    , propNumIterRk4("numIterRk4", "Number Iteration RK4", 1, 1, 100, 1)
 {
     // Register Ports
     addPort(meshOut);
@@ -50,8 +55,15 @@ EulerRK4Comparison::EulerRK4Comparison()
     addProperty(propStartPoint);
     addProperty(mouseMoveStart);
 
+
     // TODO: Register additional properties
     // addProperty(propertyName);
+    addProperty(propStepSizeEuler);
+    addProperty(propStepSizeRk4);
+    addProperty(propNumIterEuler);
+    addProperty(propNumIterRk4);
+
+
 
 }
 
@@ -115,15 +127,44 @@ void EulerRK4Comparison::process() {
     meshBBoxOut.setData(bboxMesh);
 
     // Draw start point
-    dvec2 startPoint = propStartPoint.get();
-    Integrator::drawPoint(startPoint, black, indexBufferPoints.get(), vertices);
+    vec4 red = vec4(1, 0, 0, 1);
+    dvec2 eulerStartPoint = propStartPoint.get();
+    Integrator::drawPoint(eulerStartPoint, red, indexBufferPoints.get(), vertices);
+    vec4 blue = vec4(0, 0, 1, 1);
+    dvec2 Rk4StartPoint = propStartPoint.get();
+    Integrator::drawPoint(Rk4StartPoint, blue, indexBufferPoints.get(), vertices);
 
     // TODO: Implement the Euler and Runge-Kutta of 4th order integration schemes
     // and then integrate forward for a specified number of integration steps and a given stepsize
     // (these should be additional properties of the processor)
 
-    // Integrator::Euler(vectorField, startPoint, ...);
-    // Integrator::Rk4(vectorField, dims, startPoint, ...);
+    for(int i = 0; i < propNumIterEuler; i++){
+
+        dvec2 eulerNewPoint = Integrator::Euler(vectorField, eulerStartPoint, propStepSizeEuler, +1, false);
+        if(vectorField.isInside(eulerNewPoint)){
+                Integrator::drawPoint(eulerNewPoint, red, indexBufferPoints.get(), vertices);
+                Integrator::drawLineSegment(eulerStartPoint, eulerNewPoint, red, indexBufferEuler.get(), vertices); 
+                eulerStartPoint = eulerNewPoint; 
+            }
+        else{
+            LogProcessorWarn("Interpolated value for Euler is outside the bounding box range");
+            break; 
+        }
+    }
+
+     for(int i = 0; i < propNumIterRk4; i++){
+
+        dvec2 Rk4NewPoint = Integrator::RK4(vectorField, Rk4StartPoint, propStepSizeRk4, +1, false);
+        if(vectorField.isInside(Rk4NewPoint)){
+                Integrator::drawPoint(Rk4NewPoint, blue, indexBufferPoints.get(), vertices);
+                Integrator::drawLineSegment(Rk4StartPoint, Rk4NewPoint, blue, indexBufferRK.get(), vertices); 
+                Rk4StartPoint = Rk4NewPoint; 
+            }
+        else{
+            LogProcessorWarn("Interpolated value for RK4 is outside the bounding box range");
+            break; 
+        }
+    }
 
     mesh->addVertices(vertices);
     meshOut.setData(mesh);

@@ -17,6 +17,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <lablic/lablicmoduledefine.h>
 #include <labutils/scalarvectorfield.h>
 #include <labutils/rgbaimage.h>
@@ -72,11 +73,22 @@ public:
     // Output image
     ImageOutport licOut_;
 
+    // Output debug
+    ImageOutport debugOut_; 
+
     // Properties
 public:
     // TODO: Declare properties
     // IntProperty prop1;
     // BoolProperty prop2;
+    IntProperty propKernalSize;
+    TemplateOptionProperty<int> propLICType; 
+    BoolProperty propContrast;
+    DoubleProperty propMean;
+    DoubleProperty propStdDev;
+    
+    BoolProperty propColor;
+    TransferFunctionProperty propIsoTransferFunc;
 
     // Attributes
 private:
